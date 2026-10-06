@@ -10,7 +10,7 @@ int limpar_buffer() {
     char c;
     while ((c = getchar()) != '\n' && c != EOF){
         buffer = 1;
-    };
+    }   
 
     return buffer;
 }
@@ -47,87 +47,6 @@ int ler_uint(unsigned int *valor){
         
 }
 
-int ler_livro(char titulo[], char autor[], char sinopse[], unsigned int *ano, unsigned int *qtd, unsigned *cod){
-
-    printf("-> Informe o código do livro:\n");
-
-        if(!ler_uint(cod)){
-            return 0;
-        }
-
-        if(!existelivro(cod)){
-            printf("Codigo já existente!\n");
-            return 0;
-        }
-
-    printf("-> Informe o titulo do livro:\n");
-
-        if(fgets(titulo, 100, stdin) == NULL){
-            return 0;
-        }
-
-        if(limpar_buffer != 0){
-            printf("Digite um titulo menor!(0-100)\n");
-            return 0;
-        }
-
-        titulo[strcspn(titulo, "\n")] = '\0';
-        limpar_buffer;
-
-    printf("-> Informe o autor do livro:\n");
-
-        if(fgets(autor, 100, stdin) == NULL){
-            return 0;
-        }
-
-        autor[strcspn(autor, "\n")] = '\0';
-
-        if(limpar_buffer != 0){
-            printf("Digite um autor menor!(0-100)\n");
-            return 0;
-        }
-
-    printf("-> Escreva uma breve sinopse do livro:\n");
-
-        if(fgets(sinopse, 100, stdin) == NULL){
-            return 0;
-        }
-
-        sinopse[strcspn(sinopse, "\n")] = '\0';
-        if(limpar_buffer != 0){
-            printf("Digite uma sinopse menor!(0-100)\n");
-            return 0;
-        }
-
-    printf("-> Informe o ano do livro:\n");
-
-        if(!ler_uint(ano)){
-            return 0;
-        }
-
-    printf("-> Informe a quantidade de exemplares do livro:\n");
-
-        if(!ler_uint(qtd)){
-            return 0;
-        }
-
-    return 1;
-}
-
-int existelivro(unsigned int codigo){
-    Livro *aux;
-
-    while(aux->codigo != codigo && aux->prox_livro != NULL){
-        aux = aux->prox_livro;
-    }
-
-    if(aux->codigo == codigo){
-        return 1;
-    } 
-
-    return 0;
-}
-
 typedef struct Livro{
     unsigned int codigo;
     char titulo[100];
@@ -144,12 +63,104 @@ typedef struct{
     unsigned int tam;
 } Biblioteca;
 
+int existelivro(Biblioteca *bib, unsigned int codigo){
+
+    if(bib->inicio == NULL){
+        return 0;
+    }
+
+    Livro *aux = bib->inicio;
+
+    while(aux->codigo != codigo && aux->prox_livro != NULL){
+        aux = aux->prox_livro;
+    }
+
+    if(aux->codigo == codigo){
+        return 1;
+    } 
+
+    return 0;
+}
+
+int ler_livro(char titulo[], char autor[], char sinopse[], unsigned int *ano, unsigned int *qtd, unsigned *cod, Biblioteca *bib){
+
+    printf("-> Informe o código do livro:\n");
+
+        if(!ler_uint(cod)){
+            return 0;
+        }
+
+        if(existelivro(bib, *cod)){
+            printf("Codigo já existente!\n");
+            return 0;
+        }
+
+    printf("-> Informe o titulo do livro:\n");
+
+        if(fgets(titulo, 100, stdin) == NULL){
+            return 0;
+        }
+
+        if(strchr(titulo, '\n') == NULL){
+            if(limpar_buffer() != 0){
+                printf("Digite um titulo menor!(0-100)\n");
+                return 0;
+            }
+        }
+
+            titulo[strcspn(titulo, "\n")] = '\0';
+
+    printf("-> Informe o autor do livro:\n");
+
+        if(fgets(autor, 100, stdin) == NULL){
+            return 0;
+        }
+
+        if(strchr(autor, '\n') == NULL){
+            if(limpar_buffer() != 0){
+                printf("Digite um titulo menor!(0-100)\n");
+                return 0;
+            }
+        }
+
+            autor[strcspn(autor, "\n")] = '\0';
+
+    printf("-> Escreva uma breve sinopse do livro:\n");
+
+        if(fgets(sinopse, 100, stdin) == NULL){
+            return 0;
+        }
+
+        if(strchr(sinopse, '\n') == NULL){
+            if(limpar_buffer() != 0){
+                printf("Digite um titulo menor!(0-100)\n");
+                return 0;
+            }
+        }
+
+            sinopse[strcspn(sinopse, "\n")] = '\0';
+
+    printf("-> Informe o ano do livro:\n");
+
+        if(!ler_uint(ano)){
+            return 0;
+        }
+
+    printf("-> Informe a quantidade de exemplares do livro:\n");
+
+        if(!ler_uint(qtd)){
+            return 0;
+        }
+
+    return 1;
+}
+
 int add_livro_inicio(Biblioteca *bib){
 
     unsigned int cod, ano, qtd;
     char autor[100], titulo[100], sinopse[100];
 
-    if(!ler_livro(titulo, autor, sinopse, &ano, &qtd, &cod)){
+    if(!ler_livro(titulo, autor, sinopse, &ano, &qtd, &cod, bib)){
         return 0;
     }
 
@@ -181,7 +192,7 @@ int add_livro_final(Biblioteca *bib){
     unsigned int cod, ano, qtd;
     char autor[100], titulo[100], sinopse[100];
 
-    if(!ler_livro(titulo, autor, sinopse, &ano, &qtd, &cod)){
+    if(!ler_livro(titulo, autor, sinopse, &ano, &qtd, &cod, bib)){
         return 0;
     }
         
