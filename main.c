@@ -101,9 +101,14 @@ int ler_livro(char titulo[], char autor[], char sinopse[], unsigned int *ano, un
             return 0;
         }
 
+        if(titulo[0] = '\n'){
+            printf("Erro! Titulo vazio!\n");
+            return 0;
+        }
+
         if(strchr(titulo, '\n') == NULL){
             if(limpar_buffer() != 0){
-                printf("Digite um titulo menor!(0-100)\n");
+                printf("Digite um titulo menor!(0-99)\n");
                 return 0;
             }
         }
@@ -118,7 +123,7 @@ int ler_livro(char titulo[], char autor[], char sinopse[], unsigned int *ano, un
 
         if(strchr(autor, '\n') == NULL){
             if(limpar_buffer() != 0){
-                printf("Digite um titulo menor!(0-100)\n");
+                printf("Digite um titulo menor!(0-99)\n");
                 return 0;
             }
         }
@@ -133,7 +138,7 @@ int ler_livro(char titulo[], char autor[], char sinopse[], unsigned int *ano, un
 
         if(strchr(sinopse, '\n') == NULL){
             if(limpar_buffer() != 0){
-                printf("Digite um titulo menor!(0-100)\n");
+                printf("Digite um titulo menor!(0-99)\n");
                 return 0;
             }
         }
@@ -304,6 +309,8 @@ void emprestimo_devolucao(Biblioteca *bib, unsigned int codigo, unsigned int opc
             aux->qtd++;
             aux->emprestados--;
             printf("Devolucao realizada com sucesso!!\n");
+    } else{
+        printf("Este livro nunca foi emprestado!\n");
     }
 }
 
@@ -349,8 +356,6 @@ void removerlivro(Biblioteca *bib, unsigned int codigo){
 
 
 int main(){
-
-    printf("===============\nSistema de Biblioteca\n===============\n\n");
     unsigned int opcao, aux, codigo;
 
     Biblioteca bib = {
@@ -359,6 +364,7 @@ int main(){
     };
 
     do{
+        printf("\n===============\nSistema de Biblioteca\n===============\n\n");
 
         printf("1 - Cadastrar livro\n2 - Listar livros\n3 - Consultar livro\n4 - Emprestar livro\n5 - Devolver livro\n6 - Remover livro\n0 - Sair\n");
         if(!ler_uint(&opcao)){
@@ -378,13 +384,13 @@ int main(){
                 if(aux == 1){
 
                     if(!add_livro_inicio(&bib)){
-                        return 0;
+                        continue;
                     }
 
                 } else{
 
                     if(!add_livro_final(&bib)){
-                        return 0;
+                        continue;
                     }
 
                 }

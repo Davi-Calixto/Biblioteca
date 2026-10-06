@@ -57,10 +57,10 @@ Valores numéricos são lidos linha a linha e validados. Entradas inválidas (te
 
 ## Limitações conhecidas
 
-- Os dados não são persistidos. Ao encerrar o programa, o acervo é perdido.
-- Título, autor e sinopse são limitados a 99 caracteres; entradas maiores não são tratadas corretamente.
-- O cadastro não impede códigos duplicados.
-- A devolução não verifica se o exemplar havia sido emprestado.
+- O getchar devolvendo int pode travar em loop infinito em plataformas ARM 
+- A 'ler_uint' apresenta comportamento indefinido caso o limite de 99 caracteres seja ultrapassado
+- Remover o último livro também mostra a mensagem "biblioteca vazia"
+- No cadastro qualquer posição != 1 vai para o final
 
 ## Estrutura do repositório
 
