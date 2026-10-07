@@ -101,7 +101,7 @@ int ler_livro(char titulo[], char autor[], char sinopse[], unsigned int *ano, un
             return 0;
         }
 
-        if(titulo[0] = '\n'){
+        if(titulo[0] == '\n'){
             printf("Erro! Titulo vazio!\n");
             return 0;
         }
