@@ -56,11 +56,8 @@ Valores numéricos são lidos linha a linha e validados. Entradas inválidas (te
 - Tratamento de fim de entrada (EOF) em todas as leituras.
 
 ## Limitações conhecidas
-
-- O getchar devolvendo int pode travar em loop infinito em plataformas ARM 
+ 
 - A 'ler_uint' apresenta comportamento indefinido caso o limite de 99 caracteres seja ultrapassado
-- Remover o último livro também mostra a mensagem "biblioteca vazia"
-- No cadastro qualquer posição != 1 vai para o final
 
 ## Estrutura do repositório
 
