@@ -7,7 +7,7 @@
 int limpar_buffer() {
 
     int buffer = 0;
-    char c;
+    int c;
     while ((c = getchar()) != '\n' && c != EOF){
         buffer = 1;
     }   
@@ -41,7 +41,6 @@ int ler_uint(unsigned int *valor){
 
             } else{
                 printf("Entrada invalida. Digite um numero:\n");
-
             }
         }
         
@@ -123,7 +122,7 @@ int ler_livro(char titulo[], char autor[], char sinopse[], unsigned int *ano, un
 
         if(strchr(autor, '\n') == NULL){
             if(limpar_buffer() != 0){
-                printf("Digite um titulo menor!(0-99)\n");
+                printf("Digite um autor menor!(0-99)\n");
                 return 0;
             }
         }
@@ -138,7 +137,7 @@ int ler_livro(char titulo[], char autor[], char sinopse[], unsigned int *ano, un
 
         if(strchr(sinopse, '\n') == NULL){
             if(limpar_buffer() != 0){
-                printf("Digite um titulo menor!(0-99)\n");
+                printf("Digite uma sinopse menor!(0-99)\n");
                 return 0;
             }
         }
@@ -245,12 +244,17 @@ void listarbib(Biblioteca *bib){
     Livro *aux = bib->inicio;
     int i = 1;
 
-    while(aux != NULL){
+    if(bib->inicio != NULL){
 
-        printf("%d. Codigo: %u | Titulo: %s | Autor: %s | Quantidade: %u\n", 
-            i, aux->codigo, aux->titulo, aux->autor, aux->qtd);
-        i++;
-        aux = aux->prox_livro;
+        while(aux != NULL){
+
+            printf("%d. Codigo: %u | Titulo: %s | Autor: %s | Quantidade: %u\n", 
+                i, aux->codigo, aux->titulo, aux->autor, aux->qtd);
+            i++;
+            aux = aux->prox_livro;
+        }
+    } else{
+        printf("Biblioteca vazia!\n");
     }
 }
 
@@ -271,9 +275,9 @@ void consulta_livro(Biblioteca *bib, unsigned int codigo){
             printf("Sinopse:\n%s\n", aux->sinopse);
 
             if(aux->qtd > 0){
-                printf("Boa noticia!\nTemos %u exemplares disponiveis!\n", aux->qtd);
+                printf("\nBoa noticia! Temos %u exemplares disponiveis!\n", aux->qtd);
             } else{
-                printf("Nao temos copias disponiveis, volte outro dia :(\n");
+                printf("\nNao temos copias disponiveis, volte outro dia :(\n");
             }           
     }
 
@@ -303,15 +307,18 @@ void emprestimo_devolucao(Biblioteca *bib, unsigned int codigo, unsigned int opc
             printf("Nao temos exemplares disponiveis :(\n");
         }
 
-    } else if(aux->emprestados > 0){
+    } else{
         // devolucao
 
-            aux->qtd++;
+        if(aux->emprestados > 0){
             aux->emprestados--;
-            printf("Devolucao realizada com sucesso!!\n");
-    } else{
-        printf("Este livro nunca foi emprestado!\n");
-    }
+            aux->qtd++;
+            printf("Devolucao realizada com sucesso!\n");
+        } else{
+            printf("Erro! O livro ja foi devolvido ou nunca foi emprestado!\n");   
+        }
+
+    } 
 }
 
 void removerlivro(Biblioteca *bib, unsigned int codigo){
@@ -323,13 +330,7 @@ void removerlivro(Biblioteca *bib, unsigned int codigo){
 
     Livro *aux = bib->inicio, *aux2;
 
-    if(aux->prox_livro == NULL && aux->codigo == codigo){
-        free(aux);
-        bib->tam--;
-        bib->inicio = NULL;
-        printf("Biblioteca vazia!\n");
-
-    } else if(aux->codigo == codigo){
+    if(aux->codigo == codigo){
 
         bib->inicio = aux->prox_livro;
         free(aux);
@@ -352,6 +353,19 @@ void removerlivro(Biblioteca *bib, unsigned int codigo){
             printf("Livro removido :)\n");
         }
     }
+}
+
+void liberarbiblioteca(Biblioteca *bib){
+    Livro *aux = bib->inicio; Livro *aux2;
+
+    while(aux != NULL){
+        aux2 = aux->prox_livro;
+        free(aux);
+        aux = aux2;
+    }
+
+    bib->inicio = NULL;
+    bib->tam = 0;
 }
 
 
@@ -378,7 +392,8 @@ int main(){
                 printf("Deseja colocar livro no inicio da biblioteca(1) ou no final(0)?\n");
 
                 if(!ler_uint(&aux)){
-                    return 0;
+                    opcao = 0;
+                    break;
                 }
                 
                 if(aux == 1){
@@ -387,12 +402,15 @@ int main(){
                         continue;
                     }
 
-                } else{
+                } else if (aux == 0){
 
                     if(!add_livro_final(&bib)){
                         continue;
                     }
 
+                } else{
+                    printf("Erro! Opcao invalida!\n");
+                    continue;
                 }
 
                 break;
@@ -407,7 +425,8 @@ int main(){
                 printf("Forneca um codigo:\n"); 
 
                 if(!ler_uint(&codigo)){
-                    return 0;
+                    opcao = 0;
+                    break;
                 }
 
                 consulta_livro(&bib, codigo);
@@ -419,7 +438,8 @@ int main(){
                 printf("Forneca um codigo:\n"); 
 
                 if(!ler_uint(&codigo)){
-                    return 0;
+                    opcao = 0;
+                    break;
                 }
 
                 emprestimo_devolucao(&bib, codigo, aux);
@@ -431,7 +451,8 @@ int main(){
                 printf("Forneca um codigo:\n"); 
 
                 if(!ler_uint(&codigo)){
-                    return 0;
+                    opcao = 0;
+                    break;
                 }
 
                 emprestimo_devolucao(&bib, codigo, aux);
@@ -442,7 +463,8 @@ int main(){
                 printf("Forneca um codigo:\n"); 
 
                 if(!ler_uint(&codigo)){
-                    return 0;
+                    opcao = 0;
+                    break;
                 }
 
                 removerlivro(&bib, codigo);
@@ -452,5 +474,6 @@ int main(){
         
     }while(opcao != 0);
 
+    liberarbiblioteca(&bib);
     return 0;
 }
